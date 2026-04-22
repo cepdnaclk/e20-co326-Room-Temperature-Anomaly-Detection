@@ -1,0 +1,10 @@
+# ESP32 secrets (Wi-Fi / MQTT credentials) – never commit
+edge-ai-groupXX/esp32/src/secrets.h
+
+# PlatformIO build artifacts
+edge-ai-groupXX/esp32/.pio/
+
+# Python byte-code
+__pycache__/
+*.pyc
+*.pyo
