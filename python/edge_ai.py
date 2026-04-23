@@ -1,9 +1,9 @@
 import paho.mqtt.client as mqtt
 import json
 
-BROKER = "172.31.48.1"
+BROKER      = "172.31.48.1"
 DATA_TOPIC  = "sensors/group11/temperature/data"
-ALERT_TOPIC = "alerts/group11/temperature/status/detail"
+ALERT_TOPIC = "alerts/group11/temperature/status"
 
 history = []
 
@@ -25,15 +25,18 @@ def on_message(client, userdata, msg):
     try:
         data = json.loads(msg.payload.decode())
         temp = data["temperature"]
-        print(f"📥 Temp: {temp}°C")
+        print(f"📥 Temp: {temp}°C  Humidity: {data['humidity']}%")
+
         anomalies = detect_anomaly(temp)
+
         if anomalies:
-            alert = json.dumps({"status": "ALERT", "reasons": anomalies, "temp": temp})
+            alert = json.dumps({"status": "ANOMALY", "reasons": anomalies, "temp": temp})
             client.publish(ALERT_TOPIC, alert)
-            print(f"🚨 ALERT sent: {anomalies}")
+            print(f"🚨 ANOMALY sent: {anomalies}")
         else:
             client.publish(ALERT_TOPIC, json.dumps({"status": "NORMAL", "temp": temp}))
             print("✅ Normal")
+
     except Exception as e:
         print(f"Error: {e}")
 
@@ -41,5 +44,5 @@ client = mqtt.Client()
 client.on_message = on_message
 client.connect(BROKER, 1883, 60)
 client.subscribe(DATA_TOPIC)
-print("🤖 Edge AI running...")
+print("🤖 Edge AI running on", DATA_TOPIC)
 client.loop_forever()
