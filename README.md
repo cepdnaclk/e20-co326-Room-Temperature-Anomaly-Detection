@@ -1,7 +1,11 @@
 ___
-# DELETE THIS INSTRUCTIONS AND ADD A SHORT INTRODUCTION ABOUT YOUR PROJECT
+# Room Temperature Anomaly Detection System
 ___
 
-## Please refer the instructions in below URL:
+## Group Members
 
-https://projects.ce.pdn.ac.lk/docs/how-to-add-a-project
+E/20/024
+E/20/346
+E/20/350
+E/20/378
+
