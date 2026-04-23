@@ -14,8 +14,8 @@ const char *PASSWORD = "12345678";
 const char *MQTT_SERVER = "192.168.56.1";
 const int MQTT_PORT = 1883;
 
-const char *PUB_TOPIC = "sensors/group01/temperature/data";
-const char *ALERT_TOPIC = "alerts/group01/temperature/status";
+const char *PUB_TOPIC = "sensors/group11/temperature/data";
+const char *ALERT_TOPIC = "alerts/group11/temperature/status";
 
 DHTesp dht;
 WiFiClient espClient;
@@ -139,7 +139,7 @@ void loop()
     }
 
     JsonDocument doc;
-    doc["group_id"] = "group01";
+    doc["group_id"] = "group11";
     doc["temperature"] = round(data.temperature * 10.0) / 10.0;
     doc["humidity"] = round(data.humidity * 10.0) / 10.0;
     doc["timestamp"] = millis() / 1000.0;
