@@ -1,0 +1,328 @@
+[
+    {
+        "id": "b1e3b66d34047ed9",
+        "type": "tab",
+        "label": "Flow 1",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "broker1",
+        "type": "mqtt-broker",
+        "name": "Local MQTT",
+        "broker": "mqtt",
+        "port": "1883",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "",
+        "closeTopic": "",
+        "closeQos": "0",
+        "closePayload": "",
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": ""
+    },
+    {
+        "id": "tab1",
+        "type": "ui_tab",
+        "name": "Room Temperature",
+        "icon": "dashboard",
+        "disabled": false,
+        "hidden": false
+    },
+    {
+        "id": "group1",
+        "type": "ui_group",
+        "name": "Temperature Monitor",
+        "tab": "tab1",
+        "order": 1,
+        "disp": true,
+        "width": 12
+    },
+    {
+        "id": "group2",
+        "type": "ui_group",
+        "name": "Alerts",
+        "tab": "tab1",
+        "order": 2,
+        "disp": true,
+        "width": 12
+    },
+    {
+        "id": "7a89f8cd3ea5e083",
+        "type": "ui_base",
+        "theme": {
+            "name": "theme-light",
+            "lightTheme": {
+                "default": "#0094CE",
+                "baseColor": "#0094CE",
+                "baseFont": "-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen-Sans,Ubuntu,Cantarell,Helvetica Neue,sans-serif",
+                "edited": false
+            },
+            "darkTheme": {
+                "default": "#097479",
+                "baseColor": "#097479",
+                "baseFont": "-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen-Sans,Ubuntu,Cantarell,Helvetica Neue,sans-serif",
+                "edited": false
+            },
+            "customTheme": {
+                "name": "Untitled Theme 1",
+                "default": "#4B7930",
+                "baseColor": "#4B7930",
+                "baseFont": "-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen-Sans,Ubuntu,Cantarell,Helvetica Neue,sans-serif"
+            },
+            "themeState": {
+                "base-color": {
+                    "default": "#0094CE",
+                    "value": "#0094CE",
+                    "edited": false
+                },
+                "page-titlebar-backgroundColor": {
+                    "value": "#0094CE",
+                    "edited": false
+                },
+                "page-backgroundColor": {
+                    "value": "#fafafa",
+                    "edited": false
+                },
+                "page-sidebar-backgroundColor": {
+                    "value": "#ffffff",
+                    "edited": false
+                },
+                "group-textColor": {
+                    "value": "#1bbfff",
+                    "edited": false
+                },
+                "group-borderColor": {
+                    "value": "#ffffff",
+                    "edited": false
+                },
+                "group-backgroundColor": {
+                    "value": "#ffffff",
+                    "edited": false
+                },
+                "widget-textColor": {
+                    "value": "#111111",
+                    "edited": false
+                },
+                "widget-backgroundColor": {
+                    "value": "#0094ce",
+                    "edited": false
+                },
+                "widget-borderColor": {
+                    "value": "#ffffff",
+                    "edited": false
+                },
+                "base-font": {
+                    "value": "-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen-Sans,Ubuntu,Cantarell,Helvetica Neue,sans-serif"
+                }
+            },
+            "angularTheme": {
+                "primary": "indigo",
+                "accents": "blue",
+                "warn": "red",
+                "background": "grey",
+                "palette": "light"
+            }
+        },
+        "site": {
+            "name": "Node-RED Dashboard",
+            "hideToolbar": "false",
+            "allowSwipe": "false",
+            "lockMenu": "false",
+            "allowTempTheme": "true",
+            "dateFormat": "DD/MM/YYYY",
+            "sizes": {
+                "sx": 48,
+                "sy": 48,
+                "gx": 6,
+                "gy": 6,
+                "cx": 6,
+                "cy": 6,
+                "px": 0,
+                "py": 0
+            }
+        }
+    },
+    {
+        "id": "91ddf0bfdd3abee9",
+        "type": "mqtt in",
+        "z": "b1e3b66d34047ed9",
+        "name": "Temperature Data",
+        "topic": "sensors/group11/temperature/data",
+        "qos": "2",
+        "datatype": "auto",
+        "broker": "broker1",
+        "inputs": 0,
+        "x": 510,
+        "y": 180,
+        "wires": [
+            [
+                "fa4822ae9f8a4f51",
+                "881d964a612ca7b7"
+            ]
+        ]
+    },
+    {
+        "id": "fa4822ae9f8a4f51",
+        "type": "function",
+        "z": "b1e3b66d34047ed9",
+        "name": "Parse & Split",
+        "func": "var data = msg.payload;\nif(typeof data === 'string') data = JSON.parse(data);\nvar tempMsg = {payload: data.temperature};\nvar humMsg  = {payload: data.humidity};\nvar chartMsg = {payload: data.temperature, topic: \"temperature\"};\nreturn [tempMsg, humMsg, chartMsg];",
+        "outputs": 3,
+        "x": 760,
+        "y": 180,
+        "wires": [
+            [
+                "e625baf9778a241c",
+                "a49d5f71fb450bed"
+            ],
+            [
+                "7008fc49a173872f"
+            ],
+            [
+                "bdd99f49f52558b5"
+            ]
+        ]
+    },
+    {
+        "id": "881d964a612ca7b7",
+        "type": "debug",
+        "z": "b1e3b66d34047ed9",
+        "name": "Raw Data",
+        "active": true,
+        "tosidebar": true,
+        "complete": "payload",
+        "x": 760,
+        "y": 260,
+        "wires": []
+    },
+    {
+        "id": "e625baf9778a241c",
+        "type": "ui_gauge",
+        "z": "b1e3b66d34047ed9",
+        "name": "Temperature",
+        "group": "group1",
+        "order": 1,
+        "width": 6,
+        "height": 4,
+        "gtype": "gage",
+        "title": "Temperature °C",
+        "label": "°C",
+        "format": "{{value}}",
+        "min": 0,
+        "max": 50,
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "25",
+        "seg2": "35",
+        "x": 1010,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "a49d5f71fb450bed",
+        "type": "ui_text",
+        "z": "b1e3b66d34047ed9",
+        "group": "group1",
+        "order": 3,
+        "width": 3,
+        "height": 1,
+        "name": "Temp Value",
+        "label": "Temperature",
+        "format": "{{msg.payload}} °C",
+        "layout": "row-spread",
+        "x": 1010,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "7008fc49a173872f",
+        "type": "ui_text",
+        "z": "b1e3b66d34047ed9",
+        "group": "group1",
+        "order": 4,
+        "width": 3,
+        "height": 1,
+        "name": "Humidity",
+        "label": "Humidity",
+        "format": "{{msg.payload}} %",
+        "layout": "row-spread",
+        "x": 1010,
+        "y": 250,
+        "wires": []
+    },
+    {
+        "id": "bdd99f49f52558b5",
+        "type": "ui_chart",
+        "z": "b1e3b66d34047ed9",
+        "name": "Temp History",
+        "group": "group1",
+        "order": 2,
+        "width": 12,
+        "height": 6,
+        "label": "Temperature History",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "ymin": "0",
+        "ymax": "50",
+        "removeOlder": 1,
+        "removeOlderPoints": "100",
+        "removeOlderUnit": "3600",
+        "colors": [
+            "#1f77b4"
+        ],
+        "outputs": 1,
+        "x": 1010,
+        "y": 300,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "28200becb71c5bb1",
+        "type": "mqtt in",
+        "z": "b1e3b66d34047ed9",
+        "name": "Alerts",
+        "topic": "alerts/group11/temperature/status/detail",
+        "qos": "2",
+        "datatype": "auto",
+        "broker": "broker1",
+        "inputs": 0,
+        "x": 510,
+        "y": 400,
+        "wires": [
+            [
+                "57e2cb9d669d4088"
+            ]
+        ]
+    },
+    {
+        "id": "57e2cb9d669d4088",
+        "type": "ui_text",
+        "z": "b1e3b66d34047ed9",
+        "group": "group2",
+        "order": 1,
+        "width": 6,
+        "height": 1,
+        "name": "Alert",
+        "label": "🚨 Alert",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "x": 760,
+        "y": 400,
+        "wires": []
+    }
+]
