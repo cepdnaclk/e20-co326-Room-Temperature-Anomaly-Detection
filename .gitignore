@@ -1,0 +1,12 @@
+node-red/node_modules/
+node-red/.npm/
+__pycache__/
+*.pyc
+
+# PlatformIO
+room-temp-monitor/.pio/
+room-temp-monitor/.vscode/
+
+# General
+.env
+*.log
