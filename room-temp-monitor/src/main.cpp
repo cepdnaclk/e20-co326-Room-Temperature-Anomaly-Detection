@@ -9,9 +9,9 @@
 #define LED_GREEN 2
 #define LED_RED 38
 
-const char *SSID = "Buddhi";
-const char *PASSWORD = "12345678";
-const char *MQTT_SERVER = "192.168.56.1";
+const char *SSID = "Dialog 4G 589";
+const char *PASSWORD = "60FfAb07";
+const char *MQTT_SERVER = "192.168.8.174";
 const int MQTT_PORT = 1883;
 
 const char *PUB_TOPIC = "sensors/group11/temperature/data";
@@ -20,6 +20,24 @@ const char *ALERT_TOPIC = "alerts/group11/temperature/status";
 DHTesp dht;
 WiFiClient espClient;
 PubSubClient mqttClient(espClient);
+
+void scanWiFi() {
+    Serial.println("Scanning networks...");
+    int n = WiFi.scanNetworks();
+    if (n == 0) {
+        Serial.println("No networks found");
+    } else {
+        Serial.printf("Found %d networks:\n", n);
+        for (int i = 0; i < n; i++) {
+            Serial.printf("  %d: %s (RSSI: %d) %s\n", 
+                         i+1, 
+                         WiFi.SSID(i).c_str(),
+                         WiFi.RSSI(i),
+                         WiFi.encryptionType(i) == WIFI_AUTH_OPEN ? "Open" : "Secured");
+        }
+    }
+    WiFi.scanDelete();
+}
 
 void connectWiFi()
 {
@@ -114,6 +132,7 @@ void setup()
     dht.setup(DHTPIN, DHTesp::DHT22);
     Serial.println("DHT22 ready");
 
+    //scanWiFi();
     connectWiFi();
     mqttClient.setServer(MQTT_SERVER, MQTT_PORT);
     mqttClient.setCallback(onMqttMessage);

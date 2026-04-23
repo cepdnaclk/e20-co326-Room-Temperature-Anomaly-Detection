@@ -3,18 +3,14 @@ services:
     image: eclipse-mosquitto:2.0
     container_name: mqtt
     ports:
-      - "0.0.0.0:1883:1883"
-    volumes:
-      - ./mosquitto/config:/mosquitto/config:ro
-      - ./mosquitto/data:/mosquitto/data
-      - ./mosquitto/log:/mosquitto/log
+      - "1883:1883"
     restart: unless-stopped
 
   node-red:
     image: nodered/node-red:latest
     container_name: node-red
     ports:
-      - "0.0.0.0:1880:1880"
+      - "1880:1880"
     volumes:
       - ./node-red-data:/data
     restart: unless-stopped
