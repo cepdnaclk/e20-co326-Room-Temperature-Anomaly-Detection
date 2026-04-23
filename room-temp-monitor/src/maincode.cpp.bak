@@ -1,0 +1,170 @@
+#include <Arduino.h>
+#include <WiFi.h>
+#include <PubSubClient.h>
+#include <DHT.h>
+#include <ArduinoJson.h>
+
+// ─── PIN CONFIG ───────────────────────────────────────
+#define DHTPIN 4
+#define DHTTYPE DHT22
+#define RELAY_PIN 5
+#define LED_GREEN 2
+#define LED_RED 38
+// ──────────────────────────────────────────────────────
+
+// ─── NETWORK CONFIG ───────────────────────────────────
+const char *SSID = "Buddhi";
+const char *PASSWORD = "12345678";
+const char *MQTT_SERVER = "192.168.56.1"; // run ipconfig to find this
+const int MQTT_PORT = 1883;
+// ──────────────────────────────────────────────────────
+
+// ─── MQTT TOPICS ──────────────────────────────────────
+const char *PUB_TOPIC = "sensors/group01/temperature/data";
+const char *ALERT_TOPIC = "alerts/group01/temperature/status";
+// ──────────────────────────────────────────────────────
+
+DHT dht(DHTPIN, DHTTYPE);
+WiFiClient espClient;
+PubSubClient mqttClient(espClient);
+
+// ── Connect to WiFi ───────────────────────────────────
+void connectWiFi()
+{
+    Serial.print("Connecting to WiFi");
+    WiFi.begin(SSID, PASSWORD);
+    while (WiFi.status() != WL_CONNECTED)
+    {
+        delay(500);
+        Serial.print(".");
+    }
+    Serial.println("");
+    Serial.println("WiFi connected!");
+    Serial.print("IP address: ");
+    Serial.println(WiFi.localIP());
+
+    // Visual feedback
+    digitalWrite(LED_GREEN, HIGH);
+    delay(200);
+    digitalWrite(LED_GREEN, LOW);
+    delay(200);
+    digitalWrite(LED_GREEN, HIGH);
+}
+
+// ── Handle incoming MQTT alert ─────────────────────────
+void onMqttMessage(char *topic, byte *payload, unsigned int length)
+{
+    String msg = "";
+    for (int i = 0; i < length; i++)
+        msg += (char)payload[i];
+
+    Serial.println("Alert received: " + msg);
+
+    StaticJsonDocument<256> doc;
+    DeserializationError err = deserializeJson(doc, msg);
+    if (err)
+        return;
+
+    String status = doc["status"].as<String>();
+
+    if (status == "ANOMALY")
+    {
+        // Trigger relay (buzzer on) + Red LED
+        digitalWrite(RELAY_PIN, HIGH);
+        digitalWrite(LED_RED, HIGH);
+        digitalWrite(LED_GREEN, LOW);
+        Serial.println("ANOMALY DETECTED — Relay ON, Red LED ON");
+    }
+    else
+    {
+        // Normal — Green LED
+        digitalWrite(RELAY_PIN, LOW);
+        digitalWrite(LED_RED, LOW);
+        digitalWrite(LED_GREEN, HIGH);
+    }
+}
+
+// ── Connect to MQTT broker ─────────────────────────────
+void connectMQTT()
+{
+    while (!mqttClient.connected())
+    {
+        Serial.print("Connecting to MQTT...");
+        if (mqttClient.connect("ESP32S3_TempSensor"))
+        {
+            Serial.println("MQTT connected!");
+            mqttClient.subscribe(ALERT_TOPIC);
+        }
+        else
+        {
+            Serial.print("Failed, rc=");
+            Serial.print(mqttClient.state());
+            Serial.println(" — retrying in 3s");
+            delay(3000);
+        }
+    }
+}
+
+// ── Setup ──────────────────────────────────────────────
+void setup()
+{
+    Serial.begin(115200);
+    delay(1000);
+
+    pinMode(RELAY_PIN, OUTPUT);
+    pinMode(LED_GREEN, OUTPUT);
+    pinMode(LED_RED, OUTPUT);
+
+    // Start with everything off
+    digitalWrite(RELAY_PIN, LOW);
+    digitalWrite(LED_GREEN, LOW);
+    digitalWrite(LED_RED, LOW);
+
+    dht.begin();
+
+    connectWiFi();
+
+    mqttClient.setServer(MQTT_SERVER, MQTT_PORT);
+    mqttClient.setCallback(onMqttMessage);
+    connectMQTT();
+
+    digitalWrite(LED_GREEN, HIGH); // WiFi + MQTT ready
+    Serial.println("System ready!");
+}
+
+// ── Main Loop ──────────────────────────────────────────
+void loop()
+{
+    // Keep MQTT alive
+    if (!mqttClient.connected())
+        connectMQTT();
+    mqttClient.loop();
+
+    // Read sensor
+    float temp = dht.readTemperature();
+    float hum = dht.readHumidity();
+
+    if (isnan(temp) || isnan(hum))
+    {
+        Serial.println("DHT22 read failed — check wiring!");
+        delay(2000);
+        return;
+    }
+
+    // Build JSON payload
+    StaticJsonDocument<200> doc;
+    doc["group_id"] = "group01";
+    doc["temperature"] = round(temp * 10.0) / 10.0;
+    doc["humidity"] = round(hum * 10.0) / 10.0;
+    doc["timestamp"] = millis() / 1000.0;
+
+    char buffer[200];
+    serializeJson(doc, buffer);
+
+    // Publish to MQTT
+    mqttClient.publish(PUB_TOPIC, buffer);
+
+    Serial.printf("Sent → Temp: %.1f°C  Humidity: %.1f%%\n", temp, hum);
+
+    delay(2000); // send every 2 seconds
+}

@@ -1,0 +1,32 @@
+#include <Arduino.h>
+#include <DHTesp.h>
+
+#define DHTPIN 4
+
+DHTesp dht;
+
+void setup()
+{
+  Serial.begin(115200);
+  delay(3000);
+  Serial.println("=== DHT22 Test Starting ===");
+  dht.setup(DHTPIN, DHTesp::DHT22);
+  delay(2000);
+}
+
+void loop()
+{
+  TempAndHumidity data = dht.getTempAndHumidity();
+
+  if (dht.getStatus() != 0)
+  {
+    Serial.println("FAILED: " + String(dht.getStatusString()));
+  }
+  else
+  {
+    Serial.printf("Temp: %.1f C  |  Humidity: %.1f%%\n",
+                  data.temperature, data.humidity);
+  }
+
+  delay(2000);
+}
