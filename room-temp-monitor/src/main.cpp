@@ -139,7 +139,7 @@ void loop()
     }
 
     JsonDocument doc;
-    doc["group_id"] = "group01";
+    doc["group_id"] = "group11";
     doc["temperature"] = round(data.temperature * 10.0) / 10.0;
     doc["humidity"] = round(data.humidity * 10.0) / 10.0;
     doc["timestamp"] = millis() / 1000.0;
