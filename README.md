@@ -10,7 +10,7 @@
 -  e20350, [Member 3 Name] [email](mailto:e20350@eng.pdn.ac.lk)
 -  e20378, Siriwardane I.A.U. [email](mailto:e20378@eng.pdn.ac.lk)
 
-![Final Hardware](./docs/images/hardware_setup.jpg)
+![Final Hardware](./docs/images/hardware.jpg)
 
 #### Table of Contents
 1. [Introduction](#introduction)
