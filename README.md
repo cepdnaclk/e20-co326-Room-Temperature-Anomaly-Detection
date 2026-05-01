@@ -5,12 +5,12 @@
 ---
 
 ## Team
--  e20024, [Member 1 Name] [email](mailto:e20024@eng.pdn.ac.lk)
+-  e20024, [Ariyarathna D.B.S.] [email](mailto:e20024@eng.pdn.ac.lk)
 -  e20346, Samarakoon S.M.P.H. [email](mailto:e20346@eng.pdn.ac.lk)
--  e20350, [Member 3 Name] [email](mailto:e20350@eng.pdn.ac.lk)
+-  e20350, [Sandamali J.P.D.N.] [email](mailto:e20350@eng.pdn.ac.lk)
 -  e20378, Siriwardane I.A.U. [email](mailto:e20378@eng.pdn.ac.lk)
 
-![Final Hardware](./docs/images/hardware.jpg)
+![Final Hardware](./docs/images/circuit.jpg)
 
 #### Table of Contents
 1. [Introduction](#introduction)
