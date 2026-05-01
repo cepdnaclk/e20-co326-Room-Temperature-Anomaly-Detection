@@ -276,15 +276,30 @@
         "legend": "false",
         "xformat": "HH:mm:ss",
         "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
         "ymin": "0",
         "ymax": "50",
         "removeOlder": 1,
         "removeOlderPoints": "100",
         "removeOlderUnit": "3600",
+        "cutout": "",
+        "useOneColor": false,
+        "useUTC": false,
         "colors": [
-            "#1f77b4"
+            "#1f77b4",
+            "#000000",
+            "#000000",
+            "#000000",
+            "#000000",
+            "#000000",
+            "#000000",
+            "#000000",
+            "#000000"
         ],
         "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
         "x": 1010,
         "y": 300,
         "wires": [
@@ -296,16 +311,19 @@
         "type": "mqtt in",
         "z": "b1e3b66d34047ed9",
         "name": "Alerts",
-        "topic": "alerts/group11/temperature/status/detail",
+        "topic": "alerts/group11/temperature/status",
         "qos": "2",
         "datatype": "auto",
         "broker": "broker1",
+        "nl": false,
+        "rap": false,
         "inputs": 0,
         "x": 510,
         "y": 400,
         "wires": [
             [
-                "57e2cb9d669d4088"
+                "09288e127cb2fe90",
+                "04dd11531400edb1"
             ]
         ]
     },
@@ -319,10 +337,178 @@
         "height": 1,
         "name": "Alert",
         "label": "🚨 Alert",
-        "format": "{{msg.payload}}",
+        "format": "{{msg.payload.status}} - {{msg.payload.temp}}°C",
         "layout": "row-spread",
-        "x": 760,
+        "className": "",
+        "style": false,
+        "font": "",
+        "fontSize": "",
+        "color": "#000000",
+        "x": 1070,
         "y": 400,
         "wires": []
+    },
+    {
+        "id": "switch1",
+        "type": "switch",
+        "z": "b1e3b66d34047ed9",
+        "name": "Anomaly Only",
+        "property": "payload.status",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "ANOMALY",
+                "vt": "str"
+            }
+        ],
+        "outputs": 1,
+        "x": 860,
+        "y": 550,
+        "wires": [
+            [
+                "anomaly_text",
+                "fb4d195f7c72595c"
+            ]
+        ]
+    },
+    {
+        "id": "anomaly_text",
+        "type": "ui_text",
+        "z": "b1e3b66d34047ed9",
+        "group": "group2",
+        "order": 2,
+        "width": 6,
+        "height": 1,
+        "name": "Last Anomaly",
+        "label": "🚨 Last Anomaly",
+        "format": "Temp: {{msg.payload.temp}}°C",
+        "layout": "row-spread",
+        "className": "",
+        "style": false,
+        "font": "",
+        "fontSize": "",
+        "color": "#000000",
+        "x": 1060,
+        "y": 520,
+        "wires": []
+    },
+    {
+        "id": "anomaly_chart",
+        "type": "ui_chart",
+        "z": "b1e3b66d34047ed9",
+        "name": "Anomaly Events",
+        "group": "group2",
+        "order": 3,
+        "width": 12,
+        "height": 5,
+        "label": "Anomaly Temperature Events",
+        "chartType": "bar",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "No anomalies yet",
+        "dot": true,
+        "ymin": "0",
+        "ymax": "50",
+        "removeOlder": 1,
+        "removeOlderPoints": "50",
+        "removeOlderUnit": "3600",
+        "cutout": "",
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#ca3838",
+            "#000000",
+            "#000000",
+            "#000000",
+            "#000000",
+            "#000000",
+            "#000000",
+            "#000000",
+            "#000000"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 1180,
+        "y": 620,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "09288e127cb2fe90",
+        "type": "json",
+        "z": "b1e3b66d34047ed9",
+        "name": "",
+        "property": "payload",
+        "action": "",
+        "pretty": false,
+        "x": 670,
+        "y": 540,
+        "wires": [
+            [
+                "switch1",
+                "led_template"
+            ]
+        ]
+    },
+    {
+        "id": "04dd11531400edb1",
+        "type": "json",
+        "z": "b1e3b66d34047ed9",
+        "name": "",
+        "property": "payload",
+        "action": "",
+        "pretty": false,
+        "x": 890,
+        "y": 400,
+        "wires": [
+            [
+                "57e2cb9d669d4088"
+            ]
+        ]
+    },
+    {
+        "id": "led_template",
+        "type": "ui_template",
+        "z": "b1e3b66d34047ed9",
+        "group": "group2",
+        "name": "LED Indicator",
+        "order": 4,
+        "width": 4,
+        "height": 2,
+        "format": "<div style=\"text-align:center; padding:10px;\">\n  <div ng-init=\"status='NORMAL'\" ng-style=\"{\n         'width': '60px',\n         'height': '60px',\n         'border-radius': '50%',\n         'margin': 'auto',\n         'background': msg.payload.status === 'ANOMALY' ? '#ff0000' : '#00cc00',\n         'box-shadow': '0 0 20px ' + (msg.payload.status === 'ANOMALY' ? '#ff0000' : '#00cc00')\n       }\">\n  </div>\n  <p ng-style=\"{'color': msg.payload.status === 'ANOMALY' ? '#ff0000' : '#00cc00'}\"\n    style=\"margin-top:10px; font-weight:bold; font-size:16px;\">\n    {{ msg.payload.status === 'ANOMALY' ? '🔴 ANOMALY DETECTED' : '🟢 NORMAL' }}\n  </p>\n</div>",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "",
+        "x": 620,
+        "y": 640,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "fb4d195f7c72595c",
+        "type": "function",
+        "z": "b1e3b66d34047ed9",
+        "name": "function 1",
+        "func": "// Extract only the temperature number for the chart\nmsg.payload = msg.payload.temp; \n// Provide a label for the bar\nmsg.topic = \"Anomaly Event\"; \nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1020,
+        "y": 620,
+        "wires": [
+            [
+                "anomaly_chart"
+            ]
+        ]
     }
 ]
