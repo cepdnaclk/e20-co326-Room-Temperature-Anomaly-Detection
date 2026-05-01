@@ -308,8 +308,7 @@
         "wires": [
             [
                 "09288e127cb2fe90",
-                "04dd11531400edb1",
-                "led_template"
+                "04dd11531400edb1"
             ]
         ]
     },
@@ -422,7 +421,8 @@
         "y": 540,
         "wires": [
             [
-                "switch1"
+                "switch1",
+                "led_template"
             ]
         ]
     },
