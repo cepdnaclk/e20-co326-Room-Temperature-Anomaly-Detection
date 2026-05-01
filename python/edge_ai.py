@@ -1,48 +1,21 @@
 import paho.mqtt.client as mqtt
 import json
 
-BROKER      = "172.31.48.1"
-DATA_TOPIC  = "sensors/group11/temperature/data"
+# This just forwards alerts to Node-RED
+# Actual AI runs on ESP32 now!
+BROKER      = "mqtt"
 ALERT_TOPIC = "alerts/group11/temperature/status"
 
-history = []
-
-def detect_anomaly(temp):
-    global history
-    history.append(temp)
-    if len(history) > 10:
-        history.pop(0)
-    reasons = []
-    if temp > 32.0:
-        reasons.append(f"HIGH TEMP: {temp}°C")
-    if len(history) >= 3:
-        avg = sum(history[:-1]) / len(history[:-1])
-        if abs(temp - avg) > 5:
-            reasons.append(f"SPIKE: {temp}°C vs avg {avg:.1f}°C")
-    return reasons
-
 def on_message(client, userdata, msg):
-    try:
-        data = json.loads(msg.payload.decode())
-        temp = data["temperature"]
-        print(f"📥 Temp: {temp}°C  Humidity: {data['humidity']}%")
-
-        anomalies = detect_anomaly(temp)
-
-        if anomalies:
-            alert = json.dumps({"status": "ANOMALY", "reasons": anomalies, "temp": temp})
-            client.publish(ALERT_TOPIC, alert)
-            print(f"🚨 ANOMALY sent: {anomalies}")
-        else:
-            client.publish(ALERT_TOPIC, json.dumps({"status": "NORMAL", "temp": temp}))
-            print("✅ Normal")
-
-    except Exception as e:
-        print(f"Error: {e}")
+    data = json.loads(msg.payload.decode())
+    status = data.get("status", "?")
+    method = data.get("method", "?")
+    temp   = data.get("temp", 0)
+    print(f"{status} | {temp}C | {method}")
 
 client = mqtt.Client()
-client.on_message = on_message
 client.connect(BROKER, 1883, 60)
-client.subscribe(DATA_TOPIC)
-print("🤖 Edge AI running on", DATA_TOPIC)
+client.subscribe(ALERT_TOPIC)
+client.on_message = on_message
+print("Monitoring ESP32 alerts...")
 client.loop_forever()

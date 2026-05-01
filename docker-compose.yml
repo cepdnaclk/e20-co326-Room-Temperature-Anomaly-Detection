@@ -18,3 +18,10 @@ services:
       - ./node-red:/data
     depends_on:
       - mqtt
+
+  python-edge:
+    build: ./python
+    container_name: python-edge
+    depends_on:
+      - mqtt
+    restart: unless-stopped
