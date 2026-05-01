@@ -276,15 +276,30 @@
         "legend": "false",
         "xformat": "HH:mm:ss",
         "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
         "ymin": "0",
         "ymax": "50",
         "removeOlder": 1,
         "removeOlderPoints": "100",
         "removeOlderUnit": "3600",
+        "cutout": "",
+        "useOneColor": false,
+        "useUTC": false,
         "colors": [
-            "#1f77b4"
+            "#1f77b4",
+            "#000000",
+            "#000000",
+            "#000000",
+            "#000000",
+            "#000000",
+            "#000000",
+            "#000000",
+            "#000000"
         ],
         "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
         "x": 1010,
         "y": 300,
         "wires": [
@@ -353,7 +368,7 @@
         "wires": [
             [
                 "anomaly_text",
-                "anomaly_chart"
+                "fb4d195f7c72595c"
             ]
         ]
     },
@@ -399,12 +414,25 @@
         "removeOlder": 1,
         "removeOlderPoints": "50",
         "removeOlderUnit": "3600",
+        "cutout": "",
+        "useOneColor": false,
+        "useUTC": false,
         "colors": [
-            "#ca3838"
+            "#ca3838",
+            "#000000",
+            "#000000",
+            "#000000",
+            "#000000",
+            "#000000",
+            "#000000",
+            "#000000",
+            "#000000"
         ],
         "outputs": 1,
-        "x": 1060,
-        "y": 580,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 1180,
+        "y": 620,
         "wires": [
             []
         ]
@@ -461,6 +489,26 @@
         "y": 640,
         "wires": [
             []
+        ]
+    },
+    {
+        "id": "fb4d195f7c72595c",
+        "type": "function",
+        "z": "b1e3b66d34047ed9",
+        "name": "function 1",
+        "func": "// Extract only the temperature number for the chart\nmsg.payload = msg.payload.temp; \n// Provide a label for the bar\nmsg.topic = \"Anomaly Event\"; \nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1020,
+        "y": 620,
+        "wires": [
+            [
+                "anomaly_chart"
+            ]
         ]
     }
 ]
