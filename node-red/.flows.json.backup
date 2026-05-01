@@ -152,45 +152,60 @@
         }
     },
     {
-        "id": "mqtt1",
+        "id": "91ddf0bfdd3abee9",
         "type": "mqtt in",
         "z": "b1e3b66d34047ed9",
         "name": "Temperature Data",
         "topic": "sensors/group11/temperature/data",
         "qos": "2",
-        "datatype": "json",
+        "datatype": "auto",
         "broker": "broker1",
         "inputs": 0,
-        "x": 670,
-        "y": 260,
+        "x": 510,
+        "y": 180,
         "wires": [
             [
-                "json1",
-                "debug1"
+                "fa4822ae9f8a4f51",
+                "881d964a612ca7b7"
             ]
         ]
     },
     {
-        "id": "json1",
-        "type": "json",
+        "id": "fa4822ae9f8a4f51",
+        "type": "function",
         "z": "b1e3b66d34047ed9",
-        "name": "",
-        "property": "payload",
-        "action": "obj",
-        "pretty": false,
-        "x": 870,
-        "y": 260,
+        "name": "Parse & Split",
+        "func": "var data = msg.payload;\nif(typeof data === 'string') data = JSON.parse(data);\nvar tempMsg = {payload: data.temperature};\nvar humMsg  = {payload: data.humidity};\nvar chartMsg = {payload: data.temperature, topic: \"temperature\"};\nreturn [tempMsg, humMsg, chartMsg];",
+        "outputs": 3,
+        "x": 760,
+        "y": 180,
         "wires": [
             [
-                "chart1",
-                "text_temp",
-                "text_hum",
-                "f51417cc36cd18af"
+                "e625baf9778a241c",
+                "a49d5f71fb450bed"
+            ],
+            [
+                "7008fc49a173872f"
+            ],
+            [
+                "bdd99f49f52558b5"
             ]
         ]
     },
     {
-        "id": "gauge1",
+        "id": "881d964a612ca7b7",
+        "type": "debug",
+        "z": "b1e3b66d34047ed9",
+        "name": "Raw Data",
+        "active": true,
+        "tosidebar": true,
+        "complete": "payload",
+        "x": 760,
+        "y": 260,
+        "wires": []
+    },
+    {
+        "id": "e625baf9778a241c",
         "type": "ui_gauge",
         "z": "b1e3b66d34047ed9",
         "name": "Temperature",
@@ -211,14 +226,44 @@
         ],
         "seg1": "25",
         "seg2": "35",
-        "diff": false,
-        "className": "",
-        "x": 1310,
-        "y": 220,
+        "x": 1010,
+        "y": 140,
         "wires": []
     },
     {
-        "id": "chart1",
+        "id": "a49d5f71fb450bed",
+        "type": "ui_text",
+        "z": "b1e3b66d34047ed9",
+        "group": "group1",
+        "order": 3,
+        "width": 3,
+        "height": 1,
+        "name": "Temp Value",
+        "label": "Temperature",
+        "format": "{{msg.payload}} °C",
+        "layout": "row-spread",
+        "x": 1010,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "7008fc49a173872f",
+        "type": "ui_text",
+        "z": "b1e3b66d34047ed9",
+        "group": "group1",
+        "order": 4,
+        "width": 3,
+        "height": 1,
+        "name": "Humidity",
+        "label": "Humidity",
+        "format": "{{msg.payload}} %",
+        "layout": "row-spread",
+        "x": 1010,
+        "y": 250,
+        "wires": []
+    },
+    {
+        "id": "bdd99f49f52558b5",
         "type": "ui_chart",
         "z": "b1e3b66d34047ed9",
         "name": "Temp History",
@@ -231,130 +276,191 @@
         "legend": "false",
         "xformat": "HH:mm:ss",
         "interpolate": "linear",
-        "nodata": "",
-        "dot": false,
         "ymin": "0",
         "ymax": "50",
         "removeOlder": 1,
         "removeOlderPoints": "100",
         "removeOlderUnit": "3600",
-        "cutout": 0,
-        "useOneColor": false,
         "colors": [
             "#1f77b4"
         ],
         "outputs": 1,
-        "x": 1100,
-        "y": 280,
+        "x": 1010,
+        "y": 300,
         "wires": [
             []
         ]
     },
     {
-        "id": "text_temp",
-        "type": "ui_text",
-        "z": "b1e3b66d34047ed9",
-        "group": "group1",
-        "order": 3,
-        "width": 3,
-        "height": 1,
-        "name": "Temp Value",
-        "label": "Temperature",
-        "format": "{{msg.payload.temperature}} °C",
-        "layout": "row-spread",
-        "x": 1100,
-        "y": 340,
-        "wires": []
-    },
-    {
-        "id": "text_hum",
-        "type": "ui_text",
-        "z": "b1e3b66d34047ed9",
-        "group": "group1",
-        "order": 4,
-        "width": 3,
-        "height": 1,
-        "name": "Humidity Value",
-        "label": "Humidity",
-        "format": "{{msg.payload.humidity}} %",
-        "layout": "row-spread",
-        "x": 1100,
-        "y": 380,
-        "wires": []
-    },
-    {
-        "id": "debug1",
-        "type": "debug",
-        "z": "b1e3b66d34047ed9",
-        "name": "",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "payload",
-        "x": 870,
-        "y": 320,
-        "wires": []
-    },
-    {
-        "id": "mqtt2",
+        "id": "28200becb71c5bb1",
         "type": "mqtt in",
         "z": "b1e3b66d34047ed9",
         "name": "Alerts",
-        "topic": "alerts/group11/temperature/status/detail",
+        "topic": "alerts/group11/temperature/status",
         "qos": "2",
-        "datatype": "json",
+        "datatype": "auto",
         "broker": "broker1",
+        "nl": false,
+        "rap": false,
         "inputs": 0,
-        "x": 670,
-        "y": 460,
+        "x": 510,
+        "y": 400,
         "wires": [
             [
-                "alert_text"
+                "09288e127cb2fe90",
+                "04dd11531400edb1",
+                "led_template"
             ]
         ]
     },
     {
-        "id": "alert_text",
+        "id": "57e2cb9d669d4088",
         "type": "ui_text",
         "z": "b1e3b66d34047ed9",
         "group": "group2",
         "order": 1,
         "width": 6,
         "height": 1,
-        "name": "Alert Status",
+        "name": "Alert",
         "label": "🚨 Alert",
-        "format": "{{msg.payload}}",
+        "format": "{{msg.payload.status}} - {{msg.payload.temp}}°C",
         "layout": "row-spread",
-        "x": 900,
-        "y": 460,
+        "className": "",
+        "style": false,
+        "font": "",
+        "fontSize": "",
+        "color": "#000000",
+        "x": 1070,
+        "y": 400,
         "wires": []
     },
     {
-        "id": "f51417cc36cd18af",
-        "type": "change",
+        "id": "switch1",
+        "type": "switch",
         "z": "b1e3b66d34047ed9",
-        "name": "",
+        "name": "Anomaly Only",
+        "property": "payload.status",
+        "propertyType": "msg",
         "rules": [
             {
-                "t": "set",
-                "p": "payload.temperature",
-                "pt": "msg",
-                "to": "",
-                "tot": "str"
+                "t": "eq",
+                "v": "ANOMALY",
+                "vt": "str"
             }
         ],
-        "action": "",
-        "property": "",
-        "from": "",
-        "to": "",
-        "reg": false,
-        "x": 1060,
-        "y": 220,
+        "outputs": 1,
+        "x": 860,
+        "y": 550,
         "wires": [
             [
-                "gauge1"
+                "anomaly_text",
+                "anomaly_chart"
             ]
+        ]
+    },
+    {
+        "id": "anomaly_text",
+        "type": "ui_text",
+        "z": "b1e3b66d34047ed9",
+        "group": "group2",
+        "order": 2,
+        "width": 6,
+        "height": 1,
+        "name": "Last Anomaly",
+        "label": "🚨 Last Anomaly",
+        "format": "Temp: {{msg.payload.temp}}°C",
+        "layout": "row-spread",
+        "className": "",
+        "style": false,
+        "font": "",
+        "fontSize": "",
+        "color": "#000000",
+        "x": 1060,
+        "y": 520,
+        "wires": []
+    },
+    {
+        "id": "anomaly_chart",
+        "type": "ui_chart",
+        "z": "b1e3b66d34047ed9",
+        "name": "Anomaly Events",
+        "group": "group2",
+        "order": 3,
+        "width": 12,
+        "height": 5,
+        "label": "Anomaly Temperature Events",
+        "chartType": "bar",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "No anomalies yet",
+        "dot": true,
+        "ymin": "0",
+        "ymax": "50",
+        "removeOlder": 1,
+        "removeOlderPoints": "50",
+        "removeOlderUnit": "3600",
+        "colors": [
+            "#ca3838"
+        ],
+        "outputs": 1,
+        "x": 1060,
+        "y": 580,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "09288e127cb2fe90",
+        "type": "json",
+        "z": "b1e3b66d34047ed9",
+        "name": "",
+        "property": "payload",
+        "action": "",
+        "pretty": false,
+        "x": 670,
+        "y": 540,
+        "wires": [
+            [
+                "switch1"
+            ]
+        ]
+    },
+    {
+        "id": "04dd11531400edb1",
+        "type": "json",
+        "z": "b1e3b66d34047ed9",
+        "name": "",
+        "property": "payload",
+        "action": "",
+        "pretty": false,
+        "x": 890,
+        "y": 400,
+        "wires": [
+            [
+                "57e2cb9d669d4088"
+            ]
+        ]
+    },
+    {
+        "id": "led_template",
+        "type": "ui_template",
+        "z": "b1e3b66d34047ed9",
+        "group": "group2",
+        "name": "LED Indicator",
+        "order": 4,
+        "width": 4,
+        "height": 2,
+        "format": "<div style=\"text-align:center; padding:10px;\">\n  <div ng-init=\"status='NORMAL'\" ng-style=\"{\n         'width': '60px',\n         'height': '60px',\n         'border-radius': '50%',\n         'margin': 'auto',\n         'background': msg.payload.status === 'ANOMALY' ? '#ff0000' : '#00cc00',\n         'box-shadow': '0 0 20px ' + (msg.payload.status === 'ANOMALY' ? '#ff0000' : '#00cc00')\n       }\">\n  </div>\n  <p ng-style=\"{'color': msg.payload.status === 'ANOMALY' ? '#ff0000' : '#00cc00'}\"\n    style=\"margin-top:10px; font-weight:bold; font-size:16px;\">\n    {{ msg.payload.status === 'ANOMALY' ? '🔴 ANOMALY DETECTED' : '🟢 NORMAL' }}\n  </p>\n</div>",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "",
+        "x": 620,
+        "y": 640,
+        "wires": [
+            []
         ]
     }
 ]
