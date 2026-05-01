@@ -28,20 +28,17 @@ Uncontrolled temperature fluctuations in sensitive environments like server room
 This project introduces a high-reliability Edge AI system that monitors ambient temperature and humidity using an ESP32-S3 and DHT22 sensor. By processing data at the "Edge"—locally on a containerized Python node—the system identifies both immediate threshold violations and subtle statistical anomalies without relying on cloud connectivity, ensuring low latency and high availability.
 
 ## Solution Architecture
-The system follows a layered Edge AI IoT architecture, moving data from physical sensors through a local message broker to a visualization and intelligence layer.
+The system follows a layered Edge AI IoT architecture, moving data from physical sensors through a local message broker to a visualization and intelligence layer.The flow begins with the ESP32-S3 publishing JSON-formatted sensor data via the MQTT protocol. A Python-based Edge AI subscriber processes this data, while a Node-RED dashboard provides real-time visualization for the operator.
+
 
 ![Architecture](./docs/images/architecture.png)
 
-## Data Flow
-The flow begins with the ESP32-S3 publishing JSON-formatted sensor data via the MQTT protocol. A Python-based Edge AI subscriber processes this data, while a Node-RED dashboard provides real-time visualization for the operator.
-
-![Data Flow](./docs/images/system_architecture.png)
 
 ## Hardware and Software Designs
 The hardware implementation utilizes an ESP32-S3 microcontroller, a DHT22 sensor, and a 5V relay module for physical alerts. On the software side, the entire infrastructure (MQTT Broker and Node-RED) is managed via Docker for seamless deployment.
 
 ### Circuit Diagram
-![Circuit](./docs/images/circuit_diagram.png)
+![Circuit](./docs/images/circuit.png)
 
 ## Edge AI Implementation
 The core intelligence of the system utilizes a hybrid anomaly detection logic:
