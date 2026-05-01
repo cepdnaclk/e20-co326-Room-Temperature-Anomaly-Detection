@@ -10,7 +10,7 @@
 -  e20350, [Sandamali J.P.D.N.] [email](mailto:e20350@eng.pdn.ac.lk)
 -  e20378, Siriwardane I.A.U. [email](mailto:e20378@eng.pdn.ac.lk)
 
-![Final Hardware](./docs/images/circuit.jpg)
+![Final Hardware](./docs/images/circuit.png)
 
 #### Table of Contents
 1. [Introduction](#introduction)
